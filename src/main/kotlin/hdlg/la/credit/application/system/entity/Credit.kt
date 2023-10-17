@@ -1,16 +1,29 @@
 package hdlg.la.credit.application.system.entity
 
 import hdlg.la.credit.application.system.enums.Status
+import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
-
+@Entity
+@Table(name = "credit")
 data class Credit (
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    val id: Long? = null,
+
+    @Column(nullable = false, unique = true)
     val creditCode: UUID = UUID.randomUUID(),
-    val creditValue: BigDecimal = BigDecimal.ZERO,
-    val dayFirstInstallment: LocalDate,
-    val numberOfInstallment: Int = 0,
-    val status: Status = Status.IN_PROGRESS,
-    val customer: Customer? = null,
-    val id: Long? = null
+
+    @Column(nullable = false) val creditValue: BigDecimal = BigDecimal.ZERO,
+
+    @Column(nullable = false) val dayFirstInstallment: LocalDate,
+
+    @Column(nullable = false) val numberOfInstallment: Int = 0,
+
+    @Enumerated val status: Status = Status.IN_PROGRESS,
+
+    @ManyToOne val customer: Customer? = null
 )

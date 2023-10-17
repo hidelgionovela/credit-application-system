@@ -1,7 +1,11 @@
 package hdlg.la.credit.application.system.entity
 
-data class Address (
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
 
-    var zipCode: String = "",
-    var street: String = ""
+@Embeddable
+data class Address(
+
+    @Column(nullable = false) var zipCode: String = "",
+    @Column(nullable = false) var street: String = ""
 )
