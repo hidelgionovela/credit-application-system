@@ -25,5 +25,5 @@ data class Credit (
 
     @Enumerated val status: Status = Status.IN_PROGRESS,
 
-    @ManyToOne val customer: Customer? = null
+    @ManyToOne var customer: Customer? = null
 )
