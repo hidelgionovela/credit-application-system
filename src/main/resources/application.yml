@@ -6,8 +6,8 @@ spring:
 #   todo:   pesquisar criando tabelas usando o Flyway
   jpa:
     show-sql: true
-    hibernate:
-      properties:
+    #hibernate:
+    properties:
         hibernate.format_sql: true
   h2:
     console:
