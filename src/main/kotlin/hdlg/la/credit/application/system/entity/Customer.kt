@@ -1,6 +1,7 @@
 package hdlg.la.credit.application.system.entity
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "customer")
@@ -25,6 +26,9 @@ data class Customer(
 
     @Column(nullable = false, unique = true)
     val nuit: String = "",
+
+    @Column(nullable = false, unique = true)
+    var income: BigDecimal = BigDecimal.ZERO,
 
     @Column(nullable = false)
     @Embedded
