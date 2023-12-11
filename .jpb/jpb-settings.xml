@@ -3,4 +3,13 @@
   <component name="JpaPluginProjectSettings">
     <option name="lastSelectedLanguage" value="Kotlin" />
   </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="credit-application-system.main" name="Default">
+        <packages>
+          <package value="hdlg.la.credit.application.system" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>
