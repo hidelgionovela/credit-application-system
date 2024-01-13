@@ -25,7 +25,7 @@ data class Customer(
     var password: String = "",
 
     @Column(nullable = false, unique = true)
-    val nuit: String = "",
+    var nuit: String = "",
 
     @Column(nullable = false, unique = true)
     var income: BigDecimal = BigDecimal.ZERO,
