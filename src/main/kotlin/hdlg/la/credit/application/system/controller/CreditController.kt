@@ -28,10 +28,14 @@ class CreditController(
     @GetMapping
     fun findAllByCustomerId(@RequestParam(value = "customerId") customerId: Long):
             ResponseEntity<List<CreditViewList>> {
+        // Chama o serviço para encontrar todos os créditos associados ao customerId
         val creditViewList: List<CreditViewList> = this.creditService.findAllByCustomer(customerId)
+            // Converte a lista de entidades Credit para uma lista de DTOs CreditViewList
             .stream()
             .map { credit: Credit -> CreditViewList(credit) }
             .collect(Collectors.toList())
+
+        // Retorna uma ResponseEntity com a lista de CreditViewList e o status HTTP OK
         return ResponseEntity.status(HttpStatus.OK).body(creditViewList)
     }
 
