@@ -1,0 +1,151 @@
+[1mdiff --git a/src/main/kotlin/hdlg/la/credit/application/system/controller/CreditController.kt b/src/main/kotlin/hdlg/la/credit/application/system/controller/CreditController.kt[m
+[1mindex 17bf9e5..a65c7a6 100644[m
+[1m--- a/src/main/kotlin/hdlg/la/credit/application/system/controller/CreditController.kt[m
+[1m+++ b/src/main/kotlin/hdlg/la/credit/application/system/controller/CreditController.kt[m
+[36m@@ -28,10 +28,14 @@[m [mclass CreditController([m
+     @GetMapping[m
+     fun findAllByCustomerId(@RequestParam(value = "customerId") customerId: Long):[m
+             ResponseEntity<List<CreditViewList>> {[m
+[32m+[m[32m        // Chama o serviço para encontrar todos os créditos associados ao customerId[m
+         val creditViewList: List<CreditViewList> = this.creditService.findAllByCustomer(customerId)[m
+[32m+[m[32m            // Converte a lista de entidades Credit para uma lista de DTOs CreditViewList[m
+             .stream()[m
+             .map { credit: Credit -> CreditViewList(credit) }[m
+             .collect(Collectors.toList())[m
+[32m+[m
+[32m+[m[32m        // Retorna uma ResponseEntity com a lista de CreditViewList e o status HTTP OK[m
+         return ResponseEntity.status(HttpStatus.OK).body(creditViewList)[m
+     }[m
+ [m
+[1mdiff --git a/src/main/kotlin/hdlg/la/credit/application/system/controller/CustomerController.kt b/src/main/kotlin/hdlg/la/credit/application/system/controller/CustomerController.kt[m
+[1mindex 7633c34..dec09b8 100644[m
+[1m--- a/src/main/kotlin/hdlg/la/credit/application/system/controller/CustomerController.kt[m
+[1m+++ b/src/main/kotlin/hdlg/la/credit/application/system/controller/CustomerController.kt[m
+[36m@@ -5,6 +5,8 @@[m [mimport hdlg.la.credit.application.system.dto.request.CustomerUpdateDto[m
+ import hdlg.la.credit.application.system.dto.response.CustomerView[m
+ import hdlg.la.credit.application.system.entity.Customer[m
+ import hdlg.la.credit.application.system.service.implement.CustomerService[m
+[32m+[m[32mimport org.springframework.http.HttpStatus[m
+[32m+[m[32mimport org.springframework.http.ResponseEntity[m
+ import org.springframework.web.bind.annotation.DeleteMapping[m
+ import org.springframework.web.bind.annotation.GetMapping[m
+ import org.springframework.web.bind.annotation.PatchMapping[m
+[36m@@ -20,26 +22,29 @@[m [mimport org.springframework.web.bind.annotation.RestController[m
+ class CustomerController(private val customerService: CustomerService) {[m
+ [m
+     @PostMapping[m
+[31m-    fun saveCustomer(@RequestBody customerDto: CustomerDto): String{[m
+[32m+[m[32m    fun saveCustomer(@RequestBody customerDto: CustomerDto): ResponseEntity<String> {[m
+         val customerSaved = this.customerService.save(customerDto.toEntity())[m
+[31m-        return "Customer ${customerSaved.email} saved!"[m
+[32m+[m[32m        return ResponseEntity.status(HttpStatus.CREATED).body("Customer ${customerSaved.email} saved!")[m
+     }[m
+ [m
+     @GetMapping("/{id}")[m
+[31m-    fun findById(@PathVariable id: Long): CustomerView{[m
+[32m+[m[32m    fun findById(@PathVariable id: Long): ResponseEntity<CustomerView> {[m
+         val customer: Customer = this.customerService.findByID(id)[m
+[31m-        return CustomerView(customer)[m
+[32m+[m[32m        return ResponseEntity.status(HttpStatus.OK).body(CustomerView(customer))[m
+     }[m
+ [m
+     @DeleteMapping("/{id}")[m
+[31m-    fun deleteCustomer(@PathVariable id:Long) = this.customerService.delete(id)[m
+[32m+[m[32m    fun deleteCustomer(@PathVariable id: Long) = this.customerService.delete(id)[m
+ [m
+     @PatchMapping[m
+[31m-    fun updateCustomer(@RequestParam(value = "customerId") id: Long, @RequestBody customerUpdateDto: CustomerUpdateDto): CustomerView{[m
+[32m+[m[32m    fun updateCustomer([m
+[32m+[m[32m        @RequestParam(value = "customerId") id: Long,[m
+[32m+[m[32m        @RequestBody customerUpdateDto: CustomerUpdateDto[m
+[32m+[m[32m    ): ResponseEntity<CustomerView> {[m
+         val customer: Customer = this.customerService.findByID(id)[m
+         val customerToUpdate = customerUpdateDto.toEntity(customer)[m
+[31m-        val customerUpdated: Customer =  this.customerService.save(customerToUpdate)[m
+[31m-        return CustomerView(customerUpdated)[m
+[32m+[m[32m        val customerUpdated: Customer = this.customerService.save(customerToUpdate)[m
+[32m+[m[32m        return ResponseEntity.status(HttpStatus.OK).body(CustomerView(customerUpdated))[m
+     }[m
+ [m
+ [m
+[1mdiff --git a/src/main/kotlin/hdlg/la/credit/application/system/dto/request/CreditDto.kt b/src/main/kotlin/hdlg/la/credit/application/system/dto/request/CreditDto.kt[m
+[1mindex dd83d12..98af0ad 100644[m
+[1m--- a/src/main/kotlin/hdlg/la/credit/application/system/dto/request/CreditDto.kt[m
+[1m+++ b/src/main/kotlin/hdlg/la/credit/application/system/dto/request/CreditDto.kt[m
+[36m@@ -10,8 +10,11 @@[m [mimport java.math.BigDecimal[m
+ import java.time.LocalDate[m
+ [m
+ data class CreditDto([m
+[32m+[m[32m    // Valor de credito[m
+     @field:NotNull(message = "Invalid input") val creditValue: BigDecimal,[m
+[32m+[m[32m//    data da primeira parcela[m
+     @field:Future val dayFirstOfInstallment: LocalDate,[m
+[32m+[m[32m//    Numero de parcelas[m
+     @field:Min(value = 1) @field:Max(value = 48) val numberOfInstallments: Int,[m
+     @field:NotNull(message = "Invalid input") val customerId: Long[m
+ ) {[m
+[1mdiff --git a/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CreditView.kt b/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CreditView.kt[m
+[1mindex 60df298..dce91f7 100644[m
+[1m--- a/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CreditView.kt[m
+[1m+++ b/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CreditView.kt[m
+[36m@@ -1,6 +1,7 @@[m
+ package hdlg.la.credit.application.system.dto.response[m
+ [m
+ import hdlg.la.credit.application.system.entity.Credit[m
+[32m+[m[32mimport hdlg.la.credit.application.system.entity.Customer[m
+ import hdlg.la.credit.application.system.enums.Status[m
+ import java.math.BigDecimal[m
+ import java.util.*[m
+[36m@@ -10,13 +11,15 @@[m [mdata class CreditView([m
+     val creditValue: BigDecimal,[m
+     val numberOfInstallment: Int,[m
+     val status: Status,[m
+[31m-    val emailCustomer: String?[m
+[32m+[m[32m    val emailCustomer: String?,[m
+[32m+[m[32m    val incomeCustomer: BigDecimal?[m
+ ) {[m
+     constructor(credit: Credit) : this([m
+         creditCode = credit.creditCode,[m
+         creditValue = credit.creditValue,[m
+         numberOfInstallment = credit.numberOfInstallments,[m
+         status = credit.status,[m
+[31m-        emailCustomer = credit.customer?.email[m
+[32m+[m[32m        emailCustomer = credit.customer?.email,[m
+[32m+[m[32m        incomeCustomer = credit.customer?.income[m
+     )[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CustomerView.kt b/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CustomerView.kt[m
+[1mindex 9151c5c..3dba932 100644[m
+[1m--- a/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CustomerView.kt[m
+[1m+++ b/src/main/kotlin/hdlg/la/credit/application/system/dto/response/CustomerView.kt[m
+[36m@@ -1,6 +1,7 @@[m
+ package hdlg.la.credit.application.system.dto.response[m
+ [m
+ import hdlg.la.credit.application.system.entity.Customer[m
+[32m+[m[32mimport java.math.BigDecimal[m
+ [m
+ data class CustomerView([m
+     val firstName: String,[m
+[36m@@ -10,7 +11,7 @@[m [mdata class CustomerView([m
+     val zipCode: String,[m
+     val street: String,[m
+     val id: Long?,[m
+[31m-    val income: String[m
+[32m+[m[32m    val income: BigDecimal?[m
+ ) {[m
+     constructor(customer: Customer): this ([m
+         firstName = customer.firstName,[m
+[1mdiff --git a/src/main/kotlin/hdlg/la/credit/application/system/entity/Customer.kt b/src/main/kotlin/hdlg/la/credit/application/system/entity/Customer.kt[m
+[1mindex 6d1be20..79c2291 100644[m
+[1m--- a/src/main/kotlin/hdlg/la/credit/application/system/entity/Customer.kt[m
+[1m+++ b/src/main/kotlin/hdlg/la/credit/application/system/entity/Customer.kt[m
+[36m@@ -25,7 +25,7 @@[m [mdata class Customer([m
+     var password: String = "",[m
+ [m
+     @Column(nullable = false, unique = true)[m
+[31m-    val nuit: String = "",[m
+[32m+[m[32m    var nuit: String = "",[m
+ [m
+     @Column(nullable = false, unique = true)[m
+     var income: BigDecimal = BigDecimal.ZERO,[m
