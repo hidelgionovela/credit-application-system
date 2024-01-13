@@ -1,6 +1,7 @@
 package hdlg.la.credit.application.system.dto.response
 
 import hdlg.la.credit.application.system.entity.Customer
+import java.math.BigDecimal
 
 data class CustomerView(
     val firstName: String,
@@ -10,7 +11,7 @@ data class CustomerView(
     val zipCode: String,
     val street: String,
     val id: Long?,
-    val income: String
+    val income: BigDecimal?
 ) {
     constructor(customer: Customer): this (
         firstName = customer.firstName,
