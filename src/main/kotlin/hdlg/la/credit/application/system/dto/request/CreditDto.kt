@@ -10,8 +10,11 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 data class CreditDto(
+    // Valor de credito
     @field:NotNull(message = "Invalid input") val creditValue: BigDecimal,
+//    data da primeira parcela
     @field:Future val dayFirstOfInstallment: LocalDate,
+//    Numero de parcelas
     @field:Min(value = 1) @field:Max(value = 48) val numberOfInstallments: Int,
     @field:NotNull(message = "Invalid input") val customerId: Long
 ) {
