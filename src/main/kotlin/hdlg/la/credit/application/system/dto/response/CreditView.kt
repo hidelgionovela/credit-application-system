@@ -1,6 +1,7 @@
 package hdlg.la.credit.application.system.dto.response
 
 import hdlg.la.credit.application.system.entity.Credit
+import hdlg.la.credit.application.system.entity.Customer
 import hdlg.la.credit.application.system.enums.Status
 import java.math.BigDecimal
 import java.util.*
@@ -10,13 +11,15 @@ data class CreditView(
     val creditValue: BigDecimal,
     val numberOfInstallment: Int,
     val status: Status,
-    val emailCustomer: String?
+    val emailCustomer: String?,
+    val incomeCustomer: BigDecimal?
 ) {
     constructor(credit: Credit) : this(
         creditCode = credit.creditCode,
         creditValue = credit.creditValue,
         numberOfInstallment = credit.numberOfInstallments,
         status = credit.status,
-        emailCustomer = credit.customer?.email
+        emailCustomer = credit.customer?.email,
+        incomeCustomer = credit.customer?.income
     )
 }
